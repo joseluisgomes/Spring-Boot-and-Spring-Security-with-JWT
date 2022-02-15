@@ -3,9 +3,13 @@ package io.getarrays.userservice.api;
 import io.getarrays.userservice.domain.Role;
 import io.getarrays.userservice.domain.User;
 import io.getarrays.userservice.service.UserService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -15,27 +19,44 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ResponseEntity<List<User>> getUsers() {
+        return ResponseEntity.ok().body(userService.getUsers());
     }
 
     @GetMapping("user/{username}")
-    public User getUser(@PathVariable("username") String username) {
-        return userService.getUser(username);
+    public ResponseEntity<User> getUser(@PathVariable("username") String username) {
+        return ResponseEntity.ok().body(userService.getUser(username));
     }
 
-    @PostMapping("save/user")
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    @PostMapping("user/save")
+    public ResponseEntity<User> saveUser(@RequestBody User user) {
+        URI uri = URI.create(
+                ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/api/user/save")
+                        .toUriString()
+        );
+        return ResponseEntity.created(uri).body(userService.saveUser(user));
     }
 
-    @PostMapping("save/role")
-    public Role saveRole(@RequestBody Role role) {
-        return userService.saveRole(role);
+    @PostMapping("role/save")
+    public ResponseEntity<Role> saveRole(@RequestBody Role role) {
+        URI uri = URI.create(
+                ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/api/role/save")
+                        .toUriString()
+        );
+        return ResponseEntity.created(uri).body(userService.saveRole(role));
     }
 
-    @PutMapping("update/user")
-    public void addRoleToUser(String username, String roleName) {
-        userService.addRoleToUser(username, roleName);
+    @PutMapping("user/update")
+    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm form) {
+        userService.addRoleToUser(form.getUsername(), form.getRoleName());
+        return ResponseEntity.ok().build();
+    }
+
+    @Data
+    private static class RoleToUserForm {
+        private String username;
+        private String roleName;
     }
 }
