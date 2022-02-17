@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api")
+@RequestMapping("/api")
 public class UserController {
     private final UserService userService;
 
@@ -23,12 +23,12 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @GetMapping("user/{username}")
+    @GetMapping("/user/{username}")
     public ResponseEntity<User> getUser(@PathVariable("username") String username) {
         return ResponseEntity.ok().body(userService.getUser(username));
     }
 
-    @PostMapping("user/save")
+    @PostMapping("/user/save")
     public ResponseEntity<User> saveUser(@RequestBody User user) {
         URI uri = URI.create(
                 ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.created(uri).body(userService.saveUser(user));
     }
 
-    @PostMapping("role/save")
+    @PostMapping("/role/save")
     public ResponseEntity<Role> saveRole(@RequestBody Role role) {
         URI uri = URI.create(
                 ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.created(uri).body(userService.saveRole(role));
     }
 
-    @PutMapping("user/update")
+    @PutMapping("/user/update")
     public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm form) {
         userService.addRoleToUser(form.getUsername(), form.getRoleName());
         return ResponseEntity.ok().build();
